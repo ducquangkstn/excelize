@@ -10,6 +10,7 @@
 package excelize
 
 import (
+	"archive/zip"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
@@ -1007,11 +1008,11 @@ func (f *File) stylesReader() *xlsxStyleSheet {
 
 // styleSheetWriter provides a function to save xl/styles.xml after serialize
 // structure.
-func (f *File) styleSheetWriter() {
+func (f *File) styleSheetWriter(zw *zip.Writer) error {
 	if f.Styles != nil {
-		output, _ := xml.Marshal(f.Styles)
-		f.saveFileList("xl/styles.xml", replaceStyleRelationshipsNameSpaceBytes(output))
+		return writeXMLToZipWriter(zw, "xl/styles.xml", f.Styles)
 	}
+	return writeStringToZipWriter(zw, "xl/styles.xml", templateStyles)
 }
 
 // parseFormatStyleSet provides a function to parse the format settings of the
